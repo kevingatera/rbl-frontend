@@ -34,7 +34,7 @@ function Login() {
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch])
 
-  const onChange = (e) => {
+  const handleChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value
@@ -78,7 +78,7 @@ function Login() {
               name='username'
               value={username}
               placeholder="Enter your username"
-              onChange={onChange}
+              onChange={handleChange}
             />
           </div>
           <div className="form-group">
@@ -89,7 +89,7 @@ function Login() {
               name="password"
               value={password}
               placeholder="Enter your password"
-              onChange={onChange}
+              onChange={handleChange}
             />
           </div>
           <div className="form-group">
