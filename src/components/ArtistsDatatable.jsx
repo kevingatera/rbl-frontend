@@ -127,6 +127,7 @@ function ArtistsDatatable({ data }) {
     {
       name: 'Rates',
       sortable: true,
+      selector: (row) => row.rate,
       center: true,
       cell: renderEditableTableCell,
     },
@@ -138,9 +139,17 @@ function ArtistsDatatable({ data }) {
       maxWidth: '12%',
     },
     {
+      name: 'Monthly',
+      minWidth: '50px',
+      selector: (row) => row.avgMonthly,
+      sortable: true,
+      center: true,
+    },
+    {
       name: 'Status',
       minWidth: '33%',
       sortable: true,
+      selector: (row) => row.paidStatus,
       center: true,
       cell: renderStatusCell,
     },
