@@ -1,58 +1,50 @@
-import React from 'react'
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
-import { toast } from 'react-toastify';
-import ArtistsDatatable from '../components/ArtistsDatatable';
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
+import { toast } from 'react-toastify'
+import ArtistsDatatable from '../components/ArtistsDatatable'
 
-import Spinner from '../components/Spinner';
+import Spinner from '../components/Spinner'
 
-import { getArtists, reset } from '../features/artists/artistSlice';
-
+import { getArtists } from '../features/artists/artistSlice'
 
 function Dashboard() {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth)
 
   useEffect(() => {
     if (!user) {
       navigate('/login')
     }
 
-    dispatch(getArtists());
-  }, [user, navigate, dispatch]);
+    dispatch(getArtists())
+  }, [user, navigate, dispatch])
 
-  const { artists, currentArtist, isLoading, isError, message } = useSelector((state) => state.artists);
+  const { artists, currentArtist, isLoading, isError, message } = useSelector(
+    (state) => state.artists,
+  )
 
   useEffect(() => {
-
     if (currentArtist) {
       // refresh
-      dispatch(getArtists());
+      dispatch(getArtists())
     }
 
     if (isError) {
-      toast.error(message);
+      toast.error(message)
     }
-
   }, [artists, currentArtist, isError, message, navigate, dispatch])
 
-  return (
+  return isLoading ? (
+    <Spinner />
+  ) : (
     <>
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <>
-          <div>List of artists: </div>
-          <div>
-            <ArtistsDatatable data={artists} />
-          </div>
-        </>
-      )}
-
+      <div>List of artists: </div>
+      <div>
+        <ArtistsDatatable data={artists} />
+      </div>
     </>
   )
 }

@@ -1,128 +1,162 @@
 import React, { useState } from 'react'
-import DataTable from 'react-data-table-component';
-import { FaCheck, FaTimes } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { payoutArtist, persistArtistRate } from '../features/artists/artistSlice';
+import DataTable from 'react-data-table-component'
+import { FaCheck, FaTimes } from 'react-icons/fa'
+import { useDispatch } from 'react-redux'
+import PropTypes from 'prop-types'
+import {
+  payoutArtist,
+  persistArtistRate,
+} from '../features/artists/artistSlice'
 
-function Datatable({ data }) {
-
-  const initialCurrentArtistRate = {
+function ArtistsDatatable({ data }) {
+  const initialCurrArtistRate = {
     id: null,
     originalRate: 0,
-    newRate: 0
-  };
+    newRate: 0,
+  }
 
-  const [currentArtistRate, setCurrentArtistRate] = useState(initialCurrentArtistRate);
+  const [currArtistRate, setCurrArtistRate] = useState(initialCurrArtistRate)
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const [internalArtists, setInternalArtists] = useState([...data]);
+  const [internalArtists, setInternalArtists] = useState([...data])
 
   const handleChangeRate = (e, row) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // update the current cell's state
-    if (e.target.value !== currentArtistRate.originalRate) {
-      setCurrentArtistRate((previousRate) => ({
+    if (e.target.value !== currArtistRate.originalRate) {
+      setCurrArtistRate((previousRate) => ({
         ...previousRate,
         originalRate: row.rate,
         newRate: parseFloat(e.target.value),
-        id: row.id
-      }));
+        id: row.id,
+      }))
     }
 
     setInternalArtists((prevState) => {
-      const newInternalArtists = prevState.map(artist => {
+      const newInternalArtists = prevState.map((artist) => {
         if (artist.id === row.id) {
-          return { ...artist, rate: parseFloat(e.target.value) };
+          return { ...artist, rate: parseFloat(e.target.value) }
         }
-        return artist;
-      });
-      return newInternalArtists;
-    });
-
-  };
+        return artist
+      })
+      return newInternalArtists
+    })
+  }
 
   const onSubmitRate = (e, row) => {
-    e.preventDefault();
+    e.preventDefault()
     const artistData = {
       artistId: row.id,
-      newRate: row.rate
+      newRate: row.rate,
     }
 
     dispatch(persistArtistRate(artistData))
-    setCurrentArtistRate(initialCurrentArtistRate);
-  };
+    setCurrArtistRate(initialCurrArtistRate)
+  }
 
   const handlePayout = (e, row) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    dispatch(payoutArtist(row.id));
-  };
+    dispatch(payoutArtist(row.id))
+  }
 
-  const handleRateReset = (e, row) => {
-    e.preventDefault();
-    setInternalArtists([...data]);
-    setCurrentArtistRate(initialCurrentArtistRate);
-  };
+  const handleRateReset = (e) => {
+    e.preventDefault()
+    setInternalArtists([...data])
+    setCurrArtistRate(initialCurrArtistRate)
+  }
+
+  const renderEditableTableCell = (row) => {
+    const enableHide =
+      currArtistRate.id &&
+      row.id === currArtistRate.id &&
+      row.rate !== currArtistRate.originalRate
+
+    return (
+      <form onSubmit={(e) => onSubmitRate(e, row)}>
+        <div className="form-group">
+          <input
+            type="text"
+            value={row.rate}
+            onChange={(e) => handleChangeRate(e, row)}
+            step="0.00001"
+          />
+        </div>
+        <div className={`form-group ${enableHide ? null : 'hide'}`}>
+          <button className="btn" onClick={(e) => handleRateReset(e)}>
+            <FaTimes />
+          </button>
+          <button className="btn" type="submit">
+            <FaCheck />
+          </button>
+        </div>
+      </form>
+    )
+  }
+
+  const renderStatusCell = (row) => (
+    <div>
+      <p className={row.paidStatus === 'PAID' ? 'success-text' : 'error-text'}>
+        {row.paidStatus}
+      </p>
+      <i>
+        (Last paid on <b>{row.lastPaidAt}</b> at stream <b>{row.paidStreams}</b>
+        )
+      </i>
+    </div>
+  )
+
+  const renderActionCell = (row) => (
+    <button
+      className="btn"
+      onClick={(e) => handlePayout(e, row)}
+      disabled={row.paidStatus === 'PAID'}
+    >
+      {row.paidStatus === 'PAID' ? 'Paid' : 'Pay'}
+    </button>
+  )
 
   const columns = [
     {
       name: 'Artist',
-      selector: row => row.name,
+      selector: (row) => row.name,
       sortable: true,
     },
     {
       name: 'Rates',
       sortable: true,
       center: true,
-      cell: (row) =>
-        <>
-          <form onSubmit={e => onSubmitRate(e, row)}>
-            <div className="form-group">
-              <input type="text" value={row.rate} onChange={e => handleChangeRate(e, row)} step="0.00001" />
-            </div>
-            <div className={`form-group ${currentArtistRate.id && row.id === currentArtistRate.id && row.rate !== currentArtistRate.originalRate ? null : "hide"}`}>
-              <button className='btn' onClick={e => handleRateReset(e, row)}><FaTimes /></button>
-              <button className='btn' type="submit"><FaCheck /></button>
-            </div>
-          </form>
-        </>
+      cell: renderEditableTableCell,
     },
     {
       name: 'Streams',
-      selector: row => row.streams,
+      selector: (row) => row.streams,
       sortable: true,
       center: true,
-      maxWidth: '12%'
+      maxWidth: '12%',
     },
     {
       name: 'Status',
       minWidth: '33%',
       sortable: true,
       center: true,
-      cell: (row) => <div><p className={row.paidStatus === "PAID" ? "success-text" : "error-text"} >{row.paidStatus}</p><i>(Last paid on <b>{row.lastPaidAt}</b> at stream <b>{row.paidStreams}</b>)</i></div>
+      cell: renderStatusCell,
     },
     {
       name: 'Action',
       center: true,
       maxWidth: '13%',
-      cell: (row) =>
-        <button className='btn'
-          onClick={e => handlePayout(e, row)}
-          disabled={row.paidStatus === "PAID"}>
-          {row.paidStatus === "PAID" ? "Paid" : "Pay"}
-        </button>
+      cell: renderActionCell,
     },
-  ];
+  ]
 
-  return (
-    <DataTable
-      columns={columns}
-      data={internalArtists}
-      pagination
-    />
-  );
-};
+  return <DataTable columns={columns} data={internalArtists} pagination />
+}
 
-export default Datatable
+ArtistsDatatable.propTypes = {
+  data: PropTypes.array,
+}
+
+export default ArtistsDatatable

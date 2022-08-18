@@ -1,0 +1,14 @@
+{
+  "extends": ["prettier", "@imaginary-cloud/react"],
+
+  "rules": {
+    "no-param-reassign": ["error", { "props": false }],
+    "react/button-has-type": [
+      "off",
+      {
+        "submit": true,
+        "reset": false
+      }
+    ]
+  }
+}
