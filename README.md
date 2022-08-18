@@ -1,13 +1,23 @@
-# Getting Started with Create React App and Redux
+# The Roster
 
+Frontend for an app to help accountants at a music firm dispatch payments.
 This project was bootstrapped with`npx create-react-app . --template redux`
+
+## Focus
+
+I implemented = a full database and backend (RESTful API) while keeping the front end simpler.
 
 # Tools in use:
 * ES7+ React/Redux/React-Native snippets
+* Opinionated ESLint config
 
 ## Available Scripts
 
 In the project directory, you can run:
+### `npm run lint` and `npm run lint:fix`
+
+Uses a combination of EsLint and Prettier to detech and maybe correct code syntax and errors according to 
+the opinionated rules put in place by devs company called `imaginary-cloud`
 
 ### `npm start`
 

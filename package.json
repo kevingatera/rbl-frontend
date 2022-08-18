@@ -2,7 +2,7 @@
   "name": "rbl-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "Frontend to the full-stack challenge",
+  "description": "Frontend for an app to help accountants at a music firm dispatch payments.",
   "author": "Kevin Gatera",
   "license": "ISC",
   "proxy": "http://localHost:5100",
